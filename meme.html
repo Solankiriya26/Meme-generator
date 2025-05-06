@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Meme Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+
+    canvas {
+      border: 2px solid #333;
+      margin-top: 15px;
+      max-width: 100%;
+    }
+
+    input, button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+      width: 80%;
+      max-width: 400px;
+    }
+
+    #preview {
+      margin-top: 20px;
+      max-width: 100%;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🖼️ Meme Generator</h1>
+
+  <!-- Image Upload -->
+  <input type="file" id="imageUpload" accept="image/*"><br>
+
+  <!-- Text Inputs -->
+  <input type="text" id="topText" placeholder="Top Text"><br>
+  <input type="text" id="bottomText" placeholder="Bottom Text"><br>
+
+  <!-- Buttons -->
+  <button id="downloadBtn">📥 Download Meme</button>
+
+  <!-- Canvas -->
+  <canvas id="memeCanvas" width="500" height="500"></canvas>
+
+  <!-- Optional Preview -->
+  <h3>🔍 Meme Preview</h3>
+  <img id="preview" alt="Meme preview will appear here">
+
+  <script>
+    const canvas = document.getElementById('memeCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const imageUpload = document.getElementById('imageUpload');
+    const topTextInput = document.getElementById('topText');
+    const bottomTextInput = document.getElementById('bottomText');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const preview = document.getElementById('preview');
+
+    let img = new Image();
+
+    // Handle image upload
+    imageUpload.addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        img.src = event.target.result;
+      };
+
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Draw meme on canvas
+    function drawMeme() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.font = '40px Impact';
+      ctx.textAlign = 'center';
+
+      // Draw top text
+      ctx.fillText(topTextInput.value.toUpperCase(), canvas.width / 2, 50);
+      ctx.strokeText(topTextInput.value.toUpperCase(), canvas.width / 2, 50);
+
+      // Draw bottom text
+      ctx.fillText(bottomTextInput.value.toUpperCase(), canvas.width / 2, canvas.height - 20);
+      ctx.strokeText(bottomTextInput.value.toUpperCase(), canvas.width / 2, canvas.height - 20);
+
+      // Update preview image
+      preview.src = canvas.toDataURL('image/png');
+    }
+
+    // Redraw meme when image or text changes
+    img.onload = drawMeme;
+    topTextInput.addEventListener('input', drawMeme);
+    bottomTextInput.addEventListener('input', drawMeme);
+
+    // Download meme
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'meme.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+
+</body>
+</html>
